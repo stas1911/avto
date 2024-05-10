@@ -1,0 +1,74 @@
+function setInputValueAndClickButton(value) {
+    const inputElement = document.getElementById('order-market-input');
+  
+    if (inputElement) {
+      inputElement.value = value;
+  
+      const inputEvent = new Event('input', {
+        bubbles: true,
+        cancelable: true,
+      });
+  
+      inputElement.dispatchEvent(inputEvent);
+  
+      const mode = isShortMode() ? 'sell' : 'buy';
+      // Corrected: Use backticks for template literals
+      const buttonElement = document.querySelector(`.el-button.el-button--${mode}`);
+  
+      if (buttonElement) {
+        buttonElement.click();
+      } else {
+        // Corrected: Use backticks for template literals and quotes for the inner string
+        console.error(`Buy/Sell button with class .el-button.el-button--${mode} not found`);
+      }
+    } else {
+      console.error('Input element with id "order-market-input" not found.');
+    }
+  }
+  
+  function switchMode() {
+    if (isShortMode()) {
+      document.querySelector('button.buy.flex-1').click();
+    } else {
+      document.querySelector('button.sell.flex-1').click();
+    }
+  }
+  
+  function isShortMode() {
+    return document.querySelector('button.sell.flex-1').classList.contains('active');
+  }
+  
+  function clickConfirmButton() {
+    const button = document.querySelector('el-button el-button--buy');
+  
+    if (button) {
+      button.click(); 
+    } else {
+      console.error('Confirm button not found');
+    }
+  }
+  
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+  
+  async function trade(count) {
+    let amount = 1050; // Initial amount
+    for (let i = 0; i < count; i++) {
+      console.log(`Трейд №${i + 1}`);
+      await delay(2000); // задержка перед установкой значения
+      setInputValueAndClickButton(parseFloat(amount.toFixed(1))); // Use the current amount
+
+      await delay(2000); // задержка перед сменой режима
+      switchMode();
+  
+      // After switching mode, adjust the amount
+      if (i % 2 == 0) { // Check if it's the first iteration of the switch
+        amount -= 0.4; // Decrease amount by 0.1 after the mode switch
+      } else {
+        amount += 0.2; // Return the amount back to the original for the next trade
+      }
+    }
+  }
+
+  trade(24); // кол-во трейдов    
